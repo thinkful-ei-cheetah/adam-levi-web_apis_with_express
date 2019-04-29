@@ -43,9 +43,47 @@ app.get('/cipher', (req, res) => {
         }
         return String.fromCharCode(newPosition);
     })
-
     res.send(`${newTextArr.join('')} ${shift}`);
 })
+
+app.get('/lotto', (req, res) => {
+    const arr = req.query.arr
+    let numbers= arr.map(num => Number(num));
+    let lottoArray = [];
+    let error = false;
+
+    if(numbers.length < 6 || numbers.length > 6){
+        res.status(401).send('accepts only 6 numbers');
+    }
+    
+    for(let i= 0; i< numbers.length; i++){
+        if(numbers[i] < 1 || numbers[i] > 20){
+            error = true;
+        }else {
+            error = false;
+        }
+    }
+    if(error){
+        res.status(401).send('only accepts numbers 1-20');
+    }
+    for (let i=0; i < 6; i++){
+        lottoArray.push(Math.floor(Math.random()*(20 - 1)) + 1);
+    }
+    
+    console.log(lottoArray);
+    let match = lottoArray.filter(num => numbers.includes(num));
+    console.log(match);
+    if (match.length === 6){
+        res.send('Wow! Unbelievable! You could have won the mega millions!');   
+    }else if (match.length === 5){
+        res.send('Congratulations! You win $100!')
+    }else if(match.length === 4){
+        res.send('Congratulations, you win a free ticket')
+    }else{
+        res.send('Sorry, you lose')
+    }
+   
+ })
 
 app.listen(8000, () => {
     console.log('Express server is listening on port 8000!');
